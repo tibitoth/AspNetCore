@@ -69,7 +69,7 @@ export class AuthorizeService {
                 // PopUps might be blocked by the user, fallback to redirect
                 try {
                     await this.userManager.signinRedirect(this.createArguments(state));
-                    return this.redirect(undefined);
+                    return this.redirect();
                 } catch (redirectError) {
                     console.log("Redirect authentication error: ", redirectError);
                     return this.error(redirectError);
@@ -105,7 +105,7 @@ export class AuthorizeService {
             console.log("Popup signout error: ", popupSignOutError);
             try {
                 await this.userManager.signoutRedirect(this.createArguments(state));
-                return this.success(undefined);
+                return this.redirect();
             } catch (redirectSignOutError) {
                 console.log("Redirect signout error: ", redirectSignOutError);
                 return this.error(redirectSignOutError);
@@ -155,7 +155,7 @@ export class AuthorizeService {
     }
 
     createArguments(state) {
-        return { useReplaceToNavigate: true, data: state, redirect_uri: this.userManager.settings.redirect_uri, };
+        return { useReplaceToNavigate: true, data: state };
     }
 
     error(message) {
@@ -166,8 +166,8 @@ export class AuthorizeService {
         return { status: AuthenticationResultStatus.Success, state };
     }
 
-    redirect(redirectUrl) {
-        return { status: AuthenticationResultStatus.Redirect, redirectUrl };
+    redirect() {
+        return { status: AuthenticationResultStatus.Redirect };
     }
 
     async ensureUserManagerInitialized() {

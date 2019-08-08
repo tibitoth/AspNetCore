@@ -150,7 +150,7 @@ export class AuthorizeService {
   }
 
   private createArguments(state?: any): any {
-    return { useReplaceToNavigate: true, data: state, redirect_uri: this.userManager.settings.redirect_uri };
+    return { useReplaceToNavigate: true, data: state };
   }
 
   private error(message: string): IAuthenticationResult {
