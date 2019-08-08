@@ -48,19 +48,6 @@ namespace Microsoft.AspNetCore.Server.Kestrel.FunctionalTests
         }
 
         [Theory]
-        [MemberData(nameof(AddressRegistrationDataIPv4Port5000Default))]
-        [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/2711", FlakyOn.AzP.All)]
-        public async Task RegisterAddresses_IPv4Port5000Default_Success(string addressInput, string testUrl)
-        {
-            if (!CanBindToEndpoint(IPAddress.Loopback, 5000))
-            {
-                return;
-            }
-
-            await RegisterAddresses_Success(addressInput, testUrl, 5000);
-        }
-
-        [Theory]
         [MemberData(nameof(AddressRegistrationDataIPv4Port80))]
         [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/2711", FlakyOn.AzP.All)]
         public async Task RegisterAddresses_IPv4Port80_Success(string addressInput, string testUrl)
@@ -414,61 +401,6 @@ namespace Microsoft.AspNetCore.Server.Kestrel.FunctionalTests
 
                 await host.StopAsync();
             }
-        }
-
-        [Fact]
-        [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/2711", FlakyOn.AzP.All)]
-        public Task DefaultsServerAddress_BindsToIPv4()
-        {
-            if (!CanBindToEndpoint(IPAddress.Loopback, 5000))
-            {
-                return Task.CompletedTask;
-            }
-
-            return RegisterDefaultServerAddresses_Success(new[] { "http://127.0.0.1:5000" });
-        }
-
-        [ConditionalFact]
-        [IPv6SupportedCondition]
-        [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/2711", FlakyOn.AzP.All)]
-        public Task DefaultsServerAddress_BindsToIPv6()
-        {
-            if (!CanBindToEndpoint(IPAddress.Loopback, 5000) || !CanBindToEndpoint(IPAddress.IPv6Loopback, 5000))
-            {
-                return Task.CompletedTask;
-            }
-
-            return RegisterDefaultServerAddresses_Success(new[] { "http://127.0.0.1:5000", "http://[::1]:5000" });
-        }
-
-        [Fact]
-        [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/2711", FlakyOn.AzP.All)]
-        public Task DefaultsServerAddress_BindsToIPv4WithHttps()
-        {
-            if (!CanBindToEndpoint(IPAddress.Loopback, 5000) || !CanBindToEndpoint(IPAddress.Loopback, 5001))
-            {
-                return Task.CompletedTask;
-            }
-
-            return RegisterDefaultServerAddresses_Success(
-                new[] { "http://127.0.0.1:5000", "https://127.0.0.1:5001" }, mockHttps: true);
-        }
-
-        [ConditionalFact]
-        [IPv6SupportedCondition]
-        [Flaky("https://github.com/aspnet/AspNetCore-Internal/issues/1756", FlakyOn.AzP.All)]
-        public Task DefaultsServerAddress_BindsToIPv6WithHttps()
-        {
-            if (!CanBindToEndpoint(IPAddress.Loopback, 5000) || !CanBindToEndpoint(IPAddress.IPv6Loopback, 5000)
-                || !CanBindToEndpoint(IPAddress.Loopback, 5001) || !CanBindToEndpoint(IPAddress.IPv6Loopback, 5001))
-            {
-                return Task.CompletedTask;
-            }
-
-            return RegisterDefaultServerAddresses_Success(new[] {
-                "http://127.0.0.1:5000", "http://[::1]:5000",
-                "https://127.0.0.1:5001", "https://[::1]:5001"},
-                mockHttps: true);
         }
 
         private async Task RegisterDefaultServerAddresses_Success(IEnumerable<string> addresses, bool mockHttps = false)
