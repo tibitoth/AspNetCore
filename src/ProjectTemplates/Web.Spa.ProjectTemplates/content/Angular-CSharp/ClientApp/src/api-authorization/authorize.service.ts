@@ -21,7 +21,6 @@ export interface FailureAuthenticationResult {
 
 export interface RedirectAuthenticationResult {
   status: AuthenticationResultStatus.Redirect;
-  redirectUrl: string;
 }
 
 export enum AuthenticationResultStatus {
@@ -99,7 +98,7 @@ export class AuthorizeService {
         // PopUps might be blocked by the user, fallback to redirect
         try {
           await this.userManager.signinRedirect(this.createArguments(state));
-          return this.error('There was an error redirecting to the Identity provider.');
+          return this.redirect();
         } catch (redirectError) {
           console.log('Redirect authentication error: ', redirectError);
           return this.error(redirectError);
@@ -130,7 +129,7 @@ export class AuthorizeService {
       console.log('Popup signout error: ', popupSignOutError);
       try {
         await this.userManager.signoutRedirect(this.createArguments(state));
-        return this.success(undefined);
+        return this.redirect();
       } catch (redirectSignOutError) {
         console.log('Redirect signout error: ', popupSignOutError);
         return this.error(redirectSignOutError);
@@ -162,8 +161,8 @@ export class AuthorizeService {
     return { status: AuthenticationResultStatus.Success, state };
   }
 
-  private redirect(redirectUrl: string): IAuthenticationResult {
-    return { status: AuthenticationResultStatus.Redirect, redirectUrl };
+  private redirect(): IAuthenticationResult {
+    return { status: AuthenticationResultStatus.Redirect };
   }
 
   private async ensureUserManagerInitialized(): Promise<void> {
